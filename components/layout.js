@@ -3,6 +3,7 @@ import Image from 'next/image';
 import styles from './layout.module.css';
 import utilStyles from '../styles/utils.module.css';
 import Link from 'next/link';
+import NavBar from './navbar';
 
 export const siteTitle = 'Personal CRM';
 
@@ -21,8 +22,9 @@ export default function Layout({ children }) {
       <header className={styles.header}>
         Personal CRM
       </header>
+      <NavBar />
       <main>{children}</main>
-      <footer>Goodbye world</footer>
+      <footer className={styles.footer}>Goodbye world</footer>
     </div>
   );
 }
