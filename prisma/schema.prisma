@@ -1,0 +1,34 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "mysql"
+  url      = env("DATABASE_URL")
+}
+
+model person {
+  person_id   Bytes   @id @unique(map: "person_id_UNIQUE") @db.Binary(16)
+  first_name  String? @db.VarChar(45)
+  last_name   String? @db.VarChar(45)
+  middle_name String? @db.VarChar(45)
+  prefix_id   Bytes?  @db.Binary(16)
+  suffix_id   Bytes?  @db.Binary(16)
+  prefix      prefix? @relation(fields: [prefix_id], references: [prefix_id], onDelete: NoAction, onUpdate: NoAction, map: "fk_person_prefix")
+  suffix      suffix? @relation(fields: [suffix_id], references: [suffix_id], onDelete: NoAction, onUpdate: NoAction, map: "fk_person_suffix")
+
+  @@index([prefix_id], map: "fk_person_prefix_idx")
+  @@index([suffix_id], map: "fk_person_suffix_idx")
+}
+
+model prefix {
+  prefix_id Bytes    @id @unique(map: "previx_id_UNIQUE") @db.Binary(16)
+  prefix    String?  @db.VarChar(45)
+  people    person[]
+}
+
+model suffix {
+  suffix_id Bytes    @id @unique(map: "suffix_id_UNIQUE") @db.Binary(16)
+  suffix    String?  @db.VarChar(45)
+  people    person[]
+}
