@@ -6,6 +6,8 @@
     "start": "next start"
   },
   "dependencies": {
+    "@auth0/auth0-react": "^2.0.1",
+    "@auth0/nextjs-auth0": "^2.2.3",
     "@prisma/client": "^4.11.0",
     "next": "latest",
     "node-uuid": "^1.4.8",
