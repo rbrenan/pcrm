@@ -2,3 +2,8 @@
     background-color: #111155;
     display: flex;
 }
+
+.login {
+    color: white;
+    float: right;
+}

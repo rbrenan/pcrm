@@ -7,7 +7,7 @@ import NavBar from './navbar';
 
 export const siteTitle = 'Personal CRM';
 
-export default function Layout({ children }) {
+export default function Layout({ children, userContext }) {
   return (
     <div className={styles.container}>
       <Head>
@@ -22,7 +22,7 @@ export default function Layout({ children }) {
       <header className={styles.header}>
         Personal CRM
       </header>
-      <NavBar />
+      <NavBar userContext={userContext}/>
       <main>{children}</main>
       <footer className={styles.footer}>Goodbye world</footer>
     </div>
