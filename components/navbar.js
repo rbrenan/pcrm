@@ -1,13 +1,17 @@
-import styles from './navbar.module.css';
-import NavButton from './navbutton';
+import styles from "./navbar.module.css";
+import NavButton from "./navbutton";
+import Link from "next/link";
 
 export default function NavBar({ children, userContext }) {
-    return (
-      <div className={styles.bar}>
+  return (
+    <div className={styles.bar}>
+      <Link href="/">
         <NavButton buttonText={"Home"} />
+      </Link>
+      <Link href="/people">
         <NavButton buttonText={"People"} />
-        <NavButton buttonText={"Companies"} />
-        {userContext.user ? <a href="/api/auth/logout" className={styles.login}>Logout</a> : <a href="/api/auth/login" className={styles.log}>Login</a>}
-      </div>
-    );
-  }
+      </Link>
+      <NavButton buttonText={"Companies"} />
+    </div>
+  );
+}
