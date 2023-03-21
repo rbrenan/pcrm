@@ -1,7 +1,6 @@
-import React from 'react';
+import React from "react";
 
 export default function Profile({ userContext }) {
-  
   if (userContext.isLoading) return <div>Loading...</div>;
   if (userContext.error) return <div>{error.message}</div>;
 

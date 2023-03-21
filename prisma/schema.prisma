@@ -7,8 +7,15 @@ datasource db {
   url      = env("DATABASE_URL")
 }
 
+model user {
+  user_id String   @id @unique(map: "user_id_UNIQUE") @db.VarChar(64)
+  people  person[]
+}
+
 model person {
   person_id   Bytes   @id @unique(map: "person_id_UNIQUE") @db.Binary(16)
+  user_id     String? @db.VarChar(64)
+  user        user?   @relation(fields: [user_id], references: [user_id], onDelete: NoAction, onUpdate: NoAction, map: "fk_person_user")
   first_name  String? @db.VarChar(45)
   last_name   String? @db.VarChar(45)
   middle_name String? @db.VarChar(45)
@@ -22,7 +29,7 @@ model person {
 }
 
 model prefix {
-  prefix_id Bytes    @id @unique(map: "previx_id_UNIQUE") @db.Binary(16)
+  prefix_id Bytes    @id @unique(map: "prefix_id_UNIQUE") @db.Binary(16)
   prefix    String?  @db.VarChar(45)
   people    person[]
 }

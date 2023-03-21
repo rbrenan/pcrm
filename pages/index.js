@@ -1,37 +1,30 @@
-import Head from 'next/head';
-import Layout from '../components/layout';
-import Profile from '../components/profile';
-import { getPrefixes } from '../lib/prisma';
-import { useUser } from '@auth0/nextjs-auth0/client';
+import Layout from "../components/layout";
+import { withPageAuthRequired, useUser } from "@auth0/nextjs-auth0/client";
+import Profile from "../components/profile";
+import React from "react";
 
-export async function getStaticProps( ) {
-  
-  console.log("getting static props");
-  
-  const prefixes = await getPrefixes();
-
-  return {
-      props: {
-          prefixes,
-      },
-  };
-}
-
-export default function Home({prefixes}) {
+export default withPageAuthRequired(function Index() {
   const { user, error, isLoading } = useUser();
   const userContext = {
-    user: user, 
+    user: user,
     error: error,
-    isLoading: isLoading
+    isLoading: isLoading,
   };
 
-  return (
-    <Layout userContext={userContext}>
-      
-      <Profile userContext={userContext} />
-      <ul>
-        {prefixes.map((prefix) => <li key={prefix.id}>{prefix.prefix}</li>)}
-      </ul>
-    </Layout>
-  )
-}
+  let content;
+  if (user) {
+    content = (
+      <Layout userContext={userContext}>
+        <Profile userContext={userContext} />
+        <div>{JSON.stringify(userContext.user)} </div>
+        <ul>
+          {/*prefixes.map((prefix) => <li key={prefix.id}>{prefix.prefix}</li>)*/}
+        </ul>
+      </Layout>
+    );
+  } else {
+    content = <a href="/api/auth/login">Login</a>;
+  }
+
+  return <div>{content}</div>;
+});
