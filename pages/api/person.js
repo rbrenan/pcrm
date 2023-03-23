@@ -1,19 +1,28 @@
-import { createPerson } from "../../lib/prisma";
+import { createUser, createPerson } from "../../lib/prisma";
 import { withApiAuthRequired, getSession } from "@auth0/nextjs-auth0";
 //import { NextApiRequest, NextApiResponse } from "next";
 
 export default withApiAuthRequired(async function handler(req, res) {
+  // Get the logged in user
   const { user } = await getSession(req, res);
-  req.body.user_id = user.sub;
+
+  // Make sure the logged in user exists in the user table
+  const curUser = await createUser(user);
+  console.log(curUser);
+
+  // Build the user object
+  req.body.userId = user.sub;
   const body = req.body;
 
   console.log(JSON.stringify(body));
 
-  if (!body.first_name || !body.last_name) {
+  // Validate the user object
+  if (!body.firstName || !body.lastName) {
     // HTTP bad request error code
     return res.status(400).json({ data: "First and last name are required" });
   }
 
+  // Insert new person into the database and redirect to people page
   const newPerson = await createPerson(req.body);
   console.log(JSON.stringify(newPerson));
   return res.redirect("/people?success=true").toString();

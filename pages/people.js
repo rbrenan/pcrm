@@ -32,9 +32,9 @@ export default function People(props) {
     setSubmitting(true);
 
     const person = {
-      first_name: formData.first_name,
-      middle_name: formData.middle_name,
-      last_name: formData.last_name,
+      firstName: formData.firstName,
+      middleName: formData.middleName,
+      lastName: formData.lastName,
     };
 
     setTimeout(() => {
@@ -65,24 +65,24 @@ export default function People(props) {
               <label>
                 <p>First name</p>
                 <input
-                  name="first_name"
-                  value={formData.first_name || ""}
+                  name="firstName"
+                  value={formData.firstName || ""}
                   onChange={handleChange}
                 />
               </label>
               <label>
                 <p>Middle name</p>
                 <input
-                  name="middle_name"
-                  value={formData.middle_name || ""}
+                  name="middleName"
+                  value={formData.middleName || ""}
                   onChange={handleChange}
                 />
               </label>
               <label>
                 <p>Last name</p>
                 <input
-                  name="last_name"
-                  value={formData.last_name || ""}
+                  name="lastName"
+                  value={formData.lastName || ""}
                   onChange={handleChange}
                 />
               </label>
@@ -94,7 +94,7 @@ export default function People(props) {
         <h1>People</h1>
         <ul>
           {props.people.map((person) => (
-            <li key={person.person_id}>
+            <li key={person.personId}>
               {person.firstName} {person.middleName} {person.lastName}
             </li>
           ))}
