@@ -1,13 +1,14 @@
 import { withPageAuthRequired, getSession } from "@auth0/nextjs-auth0";
 import Layout from "../components/layout";
 import React, { useReducer, useState } from "react";
-import { getCompanies } from "../lib/prisma";
+import { getPrefixes, getSuffixes } from "../lib/prisma";
 import PropTypes from "prop-types";
 
 const formReducer = (state, event) => {
   if (event.reset) {
     return {
-      companyName: "",
+      prefix: "",
+      suffix: "",
     };
   }
 
@@ -17,7 +18,7 @@ const formReducer = (state, event) => {
   };
 };
 
-export default function Companies(props) {
+export default function Admin(props) {
   const userContext = {
     user: props.user,
   };
@@ -29,8 +30,10 @@ export default function Companies(props) {
     event.preventDefault();
     setSubmitting(true);
 
-    const company = {
-      companyName: formData.companyName,
+    const person = {
+      firstName: formData.firstName,
+      middleName: formData.middleName,
+      lastName: formData.lastName,
     };
 
     setTimeout(() => {
@@ -51,18 +54,18 @@ export default function Companies(props) {
   return (
     <Layout userContext={userContext}>
       <div>
-        <h1>Add company</h1>
+        <h1>Add Prefix</h1>
         {submitting ? (
           <div>Submitting...</div>
         ) : (
           /*<form onSubmit={handleSubmit}>*/
-          <form method="POST" action="/api/company">
+          <form method="POST" action="/api/prefix">
             <fieldset>
               <label>
-                <p>Company name</p>
+                <p>Prefix</p>
                 <input
-                  name="companyName"
-                  value={formData.companyName || ""}
+                  name="prefix"
+                  value={formData.prefix || ""}
                   onChange={handleChange}
                 />
               </label>
@@ -71,10 +74,37 @@ export default function Companies(props) {
           </form>
         )}
         <br />
-        <h1>Companies</h1>
+        <h1>Prefixes</h1>
         <ul>
-          {props.companies.map((company) => (
-            <li key={company.companyId}>{company.companyName}</li>
+          {props.prefixes.map((prefix) => (
+            <li key={prefix.prefixId}>{prefix.prefix}</li>
+          ))}
+        </ul>
+
+        <h1>Add Suffix</h1>
+        {submitting ? (
+          <div>Submitting...</div>
+        ) : (
+          /*<form onSubmit={handleSubmit}>*/
+          <form method="POST" action="/api/suffix">
+            <fieldset>
+              <label>
+                <p>Suffix</p>
+                <input
+                  name="suffix"
+                  value={formData.suffix || ""}
+                  onChange={handleChange}
+                />
+              </label>
+            </fieldset>
+            <button type="submit">Submit</button>
+          </form>
+        )}
+        <br />
+        <h1>Suffixes</h1>
+        <ul>
+          {props.suffixes.map((suffix) => (
+            <li key={suffix.suffixId}>{suffix.suffix}</li>
           ))}
         </ul>
       </div>
@@ -82,19 +112,22 @@ export default function Companies(props) {
   );
 }
 
-Companies.propTypes = {
+Admin.propTypes = {
   user: PropTypes.Node,
-  companies: PropTypes.arrayOf(PropTypes.object),
+  prefixes: PropTypes.arrayOf(PropTypes.object),
+  suffixes: PropTypes.arrayOf(PropTypes.object),
 };
 
 export const getServerSideProps = withPageAuthRequired({
   async getServerSideProps(ctx) {
     const session = await getSession(ctx.req, ctx.res);
 
-    const companies = await getCompanies(session.user.sub);
+    const prefixes = await getPrefixes(session.user.sub);
+    const suffixes = await getSuffixes(session.user.sub);
     return {
       props: {
-        companies: companies,
+        prefixes: prefixes,
+        suffixes: suffixes,
       },
     };
   },

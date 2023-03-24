@@ -1,7 +1,7 @@
 import { withPageAuthRequired, getSession } from "@auth0/nextjs-auth0";
 import Layout from "../components/layout";
 import React, { useReducer, useState } from "react";
-import { getPeople } from "../lib/prisma";
+import { getPeople, getPrefixes, getSuffixes } from "../lib/prisma";
 import PropTypes from "prop-types";
 
 const formReducer = (state, event) => {
@@ -63,6 +63,28 @@ export default function People(props) {
           <form method="POST" action="/api/person">
             <fieldset>
               <label>
+                <p>Prefix</p>
+                {/*<input
+                  name="prefix"
+                  value={formData.prefix || ""}
+                  list="prefixes"
+                  onChange={handleChange}
+                />
+                <datalist id="prefixes">
+                  {props.prefixes.map((prefix) => (
+                    <option key={prefix.prefixId} value={prefix.prefix} />
+                  ))}
+                  </datalist>*/}
+                <select name="prefixId">
+                  <option value="">--Prefix--</option>
+                  {props.prefixes.map((prefix) => (
+                    <option key={prefix.prefixId} value={prefix.prefixId}>
+                      {prefix.prefix}
+                    </option>
+                  ))}
+                </select>
+              </label>
+              <label>
                 <p>First name</p>
                 <input
                   name="firstName"
@@ -86,6 +108,17 @@ export default function People(props) {
                   onChange={handleChange}
                 />
               </label>
+              <label>
+                <p>Suffix</p>
+                <select name="suffixId">
+                  <option value="">--Suffix--</option>
+                  {props.suffixes.map((suffix) => (
+                    <option key={suffix.suffixId} value={suffix.suffixId}>
+                      {suffix.suffix}
+                    </option>
+                  ))}
+                </select>
+              </label>
             </fieldset>
             <button type="submit">Submit</button>
           </form>
@@ -95,7 +128,9 @@ export default function People(props) {
         <ul>
           {props.people.map((person) => (
             <li key={person.personId}>
-              {person.firstName} {person.middleName} {person.lastName}
+              {/*JSON.stringify(person)*/} {person.prefix?.prefix}{" "}
+              {person.firstName} {person.middleName} {person.lastName}{" "}
+              {person.suffix?.suffix}
             </li>
           ))}
         </ul>
@@ -107,17 +142,26 @@ export default function People(props) {
 People.propTypes = {
   user: PropTypes.Node,
   people: PropTypes.arrayOf(PropTypes.object),
+  prefixes: PropTypes.arrayOf(PropTypes.object),
+  suffixes: PropTypes.arrayOf(PropTypes.object),
 };
 
 export const getServerSideProps = withPageAuthRequired({
   async getServerSideProps(ctx) {
-    console.log(ctx);
     const session = await getSession(ctx.req, ctx.res);
-    console.log(session);
+
     const people = await getPeople(session.user.sub);
+    const prefixes = await getPrefixes(session.user.sub);
+    console.log("=================");
+    console.log(JSON.stringify(people));
+    console.log("=================");
+    console.log(JSON.stringify(prefixes));
+    const suffixes = await getSuffixes(session.user.sub);
     return {
       props: {
         people: people,
+        prefixes: prefixes,
+        suffixes: suffixes,
       },
     };
   },
