@@ -3,6 +3,7 @@ import Layout from "../components/layout";
 import React, { useReducer, useState } from "react";
 import { getPeople, getPrefixes, getSuffixes } from "../lib/prisma";
 import PropTypes from "prop-types";
+import Link from "next/link";
 
 const formReducer = (state, event) => {
   if (event.reset) {
@@ -60,7 +61,7 @@ export default function People(props) {
           <div>Submitting...</div>
         ) : (
           /*<form onSubmit={handleSubmit}>*/
-          <form method="POST" action="/api/person">
+          <form method="POST" action="/api/people/">
             <fieldset>
               <label>
                 <p>Prefix</p>
@@ -128,9 +129,11 @@ export default function People(props) {
         <ul>
           {props.people.map((person) => (
             <li key={person.personId}>
-              {/*JSON.stringify(person)*/} {person.prefix?.prefix}{" "}
-              {person.firstName} {person.middleName} {person.lastName}{" "}
-              {person.suffix?.suffix}
+              <Link href={`/people/${encodeURIComponent(person.personId)}`}>
+                {/*JSON.stringify(person)*/} {person.prefix?.prefix}{" "}
+                {person.firstName} {person.middleName} {person.lastName}{" "}
+                {person.suffix?.suffix}
+              </Link>
             </li>
           ))}
         </ul>
@@ -152,10 +155,7 @@ export const getServerSideProps = withPageAuthRequired({
 
     const people = await getPeople(session.user.sub);
     const prefixes = await getPrefixes(session.user.sub);
-    console.log("=================");
-    console.log(JSON.stringify(people));
-    console.log("=================");
-    console.log(JSON.stringify(prefixes));
+
     const suffixes = await getSuffixes(session.user.sub);
     return {
       props: {
