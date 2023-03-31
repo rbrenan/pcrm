@@ -8,34 +8,98 @@ datasource db {
 }
 
 model user {
-  user_id String   @id @unique(map: "user_id_UNIQUE") @db.VarChar(64)
-  people  person[]
+  userId           String            @id @unique(map: "user_id_UNIQUE") @db.VarChar(64)
+  firstName        String?           @db.VarChar(45)
+  lastName         String?           @db.VarChar(45)
+  email            String?           @db.VarChar(320)
+  people           person[]
+  prefixes         prefix[]
+  suffixes         suffix[]
+  interactions     interaction[]
+  interactionTypes interactionType[]
+  companies        company[]
+  venues           venue[]
+  venueTypes       venueType[]
 }
 
 model person {
-  person_id   Bytes   @id @unique(map: "person_id_UNIQUE") @db.Binary(16)
-  user_id     String? @db.VarChar(64)
-  user        user?   @relation(fields: [user_id], references: [user_id], onDelete: NoAction, onUpdate: NoAction, map: "fk_person_user")
-  first_name  String? @db.VarChar(45)
-  last_name   String? @db.VarChar(45)
-  middle_name String? @db.VarChar(45)
-  prefix_id   Bytes?  @db.Binary(16)
-  suffix_id   Bytes?  @db.Binary(16)
-  prefix      prefix? @relation(fields: [prefix_id], references: [prefix_id], onDelete: NoAction, onUpdate: NoAction, map: "fk_person_prefix")
-  suffix      suffix? @relation(fields: [suffix_id], references: [suffix_id], onDelete: NoAction, onUpdate: NoAction, map: "fk_person_suffix")
+  personId     Bytes         @id @unique(map: "person_id_UNIQUE") @db.Binary(16)
+  userId       String        @db.VarChar(64)
+  user         user          @relation(fields: [userId], references: [userId], onDelete: NoAction, onUpdate: NoAction, map: "fk_person_user")
+  firstName    String?       @db.VarChar(45)
+  lastName     String?       @db.VarChar(45)
+  middleName   String?       @db.VarChar(45)
+  prefixId     Bytes?        @db.Binary(16)
+  suffixId     Bytes?        @db.Binary(16)
+  prefix       prefix?       @relation(fields: [prefixId], references: [prefixId], onDelete: NoAction, onUpdate: NoAction, map: "fk_person_prefix")
+  suffix       suffix?       @relation(fields: [suffixId], references: [suffixId], onDelete: NoAction, onUpdate: NoAction, map: "fk_person_suffix")
+  interactions interaction[]
+  companies    company[]
 
-  @@index([prefix_id], map: "fk_person_prefix_idx")
-  @@index([suffix_id], map: "fk_person_suffix_idx")
+  @@index([prefixId], map: "fk_person_prefix_idx")
+  @@index([suffixId], map: "fk_person_suffix_idx")
 }
 
 model prefix {
-  prefix_id Bytes    @id @unique(map: "prefix_id_UNIQUE") @db.Binary(16)
-  prefix    String?  @db.VarChar(45)
-  people    person[]
+  prefixId Bytes    @id @unique(map: "prefix_id_UNIQUE") @db.Binary(16)
+  prefix   String?  @db.VarChar(45)
+  userId   String   @db.VarChar(64)
+  user     user     @relation(fields: [userId], references: [userId], onDelete: NoAction, onUpdate: NoAction, map: "fk_prefix_user")
+  people   person[]
 }
 
 model suffix {
-  suffix_id Bytes    @id @unique(map: "suffix_id_UNIQUE") @db.Binary(16)
-  suffix    String?  @db.VarChar(45)
-  people    person[]
+  suffixId Bytes    @id @unique(map: "suffix_id_UNIQUE") @db.Binary(16)
+  suffix   String?  @db.VarChar(45)
+  userId   String   @db.VarChar(64)
+  user     user     @relation(fields: [userId], references: [userId], onDelete: NoAction, onUpdate: NoAction, map: "fk_suffix_user")
+  people   person[]
+}
+
+model interaction {
+  interactionId     Bytes           @id @unique(map: "interaction_id_UNIQUE") @db.Binary(16)
+  userId            String          @db.VarChar(64)
+  user              user            @relation(fields: [userId], references: [userId], onDelete: NoAction, onUpdate: NoAction, map: "fk_interaction_user")
+  interactionTypeId Bytes           @db.Binary(16)
+  interactionType   interactionType @relation(fields: [interactionTypeId], references: [interactionTypeId], onDelete: NoAction, onUpdate: NoAction, map: "fk_interaction_interactionType")
+  interactionTime   DateTime
+  people            person[]
+  companies         company[]
+  venueId           Bytes           @db.Binary(16)
+  venue             venue           @relation(fields: [venueId], references: [venueId], onDelete: NoAction, onUpdate: NoAction, map: "fk_interaction_venue")
+}
+
+model interactionType {
+  interactionTypeId Bytes         @id @unique(map: "interaction_type_id_UNIQUE") @db.Binary(16)
+  userId            String        @db.VarChar(64)
+  user              user          @relation(fields: [userId], references: [userId], onDelete: NoAction, onUpdate: NoAction, map: "fk_interactionType_user")
+  description       String        @db.VarChar(45)
+  interactions      interaction[]
+}
+
+model company {
+  companyId    Bytes         @id @unique(map: "company_id_UNIQUE") @db.Binary(16)
+  userId       String        @db.VarChar(64)
+  user         user          @relation(fields: [userId], references: [userId], onDelete: NoAction, onUpdate: NoAction, map: "fk_company_user")
+  companyName  String        @db.VarChar(255)
+  people       person[]
+  interactions interaction[]
+}
+
+model venue {
+  venueId     Bytes         @id @unique(map: "venue_id_UNIQUE") @db.Binary(16)
+  userId      String        @db.VarChar(64)
+  user        user          @relation(fields: [userId], references: [userId], onDelete: NoAction, onUpdate: NoAction, map: "fk_venue_user")
+  venueName   String        @db.VarChar(255)
+  interaction interaction[]
+  venueType   venueType?    @relation(fields: [venueTypeId], references: [venueTypeId])
+  venueTypeId Bytes         @db.Binary(16)
+}
+
+model venueType {
+  venueTypeId Bytes   @id @unique(map: "venue_type_id_UNIQUE") @db.Binary(16)
+  userId      String  @db.VarChar(64)
+  user        user    @relation(fields: [userId], references: [userId], onDelete: NoAction, onUpdate: NoAction, map: "fk_venueType_user")
+  description String  @db.VarChar(45)
+  venues      venue[]
 }

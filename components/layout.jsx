@@ -4,7 +4,7 @@ import styles from "./layout.module.css";
 import utilStyles from "../styles/utils.module.css";
 import Link from "next/link";
 import NavBar from "./navbar";
-import Profile from "../components/profile";
+import Profile from "./profile";
 import React from "react";
 
 export const siteTitle = "Personal CRM";
