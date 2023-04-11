@@ -2,7 +2,14 @@ import { withPageAuthRequired, getSession } from "@auth0/nextjs-auth0";
 import Layout from "../../components/layout";
 import { getPerson, getPrefixes, getSuffixes } from "../../lib/prisma";
 import React, { useReducer } from "react";
-import { useSWR } from "swr";
+import {
+  TextField,
+  Button,
+  Container,
+  Stack,
+  Select,
+  MenuItem,
+} from "@mui/material";
 
 const formReducer = (state, event) => {
   if (event.reset) {
@@ -20,8 +27,6 @@ const formReducer = (state, event) => {
     [event.name]: event.value,
   };
 };
-
-
 
 export default function Person(props) {
   const userContext = {
@@ -41,78 +46,87 @@ export default function Person(props) {
     e.preventDefault();
 
     await fetch(`/api/people/${encodeURIComponent(formData.personId)}`, {
-      method: 'PUT',
-      headers: {'Content-type': 'application/json'},
-      body: JSON.stringify(formData)
+      method: "PUT",
+      headers: { "Content-type": "application/json" },
+      body: JSON.stringify(formData),
     });
-    
   };
 
   return (
     <Layout userContext={userContext}>
       <form onSubmit={handleSubmit}>
         <fieldset>
-          {/*<input name="personId" type="hidden" value={formData.pesonId} />*/}
-          <label>
-            <p>Prefix {formData.prefixId}</p>
-            <select name="prefixId" onChange={handleChange}>
-              <option value="" selected={(!formData.prefix)}>
-                --Prefix--
-              </option>
-              {props.prefixes?.map((prefix) => (
-                <option
-                  key={prefix.prefixId}
-                  value={prefix.prefixId}
-                  selected={(formData.prefixId = prefix.prefixId)}
-                >
-                  {prefix.prefix}
-                </option>
-              ))}
-            </select>
-          </label>
-          <label>
-            <p>First name</p>
-            <input
-              name="firstName"
-              value={formData.firstName || ""}
-              onChange={handleChange}
-            />
-          </label>
-          <label>
-            <p>Middle name</p>
-            <input
-              name="middleName"
-              value={formData.middleName || ""}
-              onChange={handleChange}
-            />
-          </label>
-          <label>
-            <p>Last name</p>
-            <input
-              name="lastName"
-              value={formData.lastName || ""}
-              onChange={handleChange}
-            />
-          </label>
-          <label>
-            <p>Suffix</p>
-            <select name="suffixId" onChange={handleChange}>
-              <option value="" selected={(!formData.suffixId)}>
-                --Suffix--
-              </option>
-              {props.suffixes?.map((suffix) => (
-                <option
-                  key={suffix.suffixId}
-                  value={suffix.suffixId}
-                  selected={(formData.suffixId = suffix.suffixId)}
-                >
-                  {suffix.suffix}
-                </option>
-              ))}
-            </select>
-          </label>
+          <Select
+            name="prefixId"
+            value={formData.prefixId}
+            label="Prefix"
+            onChange={handleChange}
+            sx={{ mb: 4 }}
+          >
+            <MenuItem key="" value={null}>
+              ---Prefix---
+            </MenuItem>
+            {props.prefixes?.map((prefix) => (
+              <MenuItem key={prefix.prefixId} value={prefix.prefixId}>
+                {prefix.prefix}
+              </MenuItem>
+            ))}
+          </Select>
+          <TextField
+            name="firstName"
+            type="text"
+            variant="outlined"
+            color="secondary"
+            label="First Name"
+            onChange={handleChange}
+            value={formData.firstName}
+            fullWidth
+            required
+            sx={{ mb: 4 }}
+          />
+          <TextField
+            name="middleName"
+            type="text"
+            variant="outlined"
+            color="secondary"
+            label="Middle Name"
+            onChange={handleChange}
+            value={formData.middleName}
+            fullWidth
+            sx={{ mb: 4 }}
+          />
+          <TextField
+            name="lastName"
+            type="text"
+            variant="outlined"
+            color="secondary"
+            label="Last Name"
+            onChange={handleChange}
+            value={formData.lastName}
+            fullWidth
+            required
+            sx={{ mb: 4 }}
+          />
+          <Select
+            name="suffixId"
+            value={formData.suffixId}
+            label="Suffix"
+            onChange={handleChange}
+            sx={{ mb: 4 }}
+          >
+            <MenuItem key="" value={null}>
+              ---Suffix---
+            </MenuItem>
+            {props.suffixes?.map((suffix) => (
+              <MenuItem key={suffix.suffixId} value={suffix.suffixId}>
+                {suffix.suffix}
+              </MenuItem>
+            ))}
+          </Select>
         </fieldset>
-        <button type="submit">Submit</button>
+        <Button type="submit" sx={{ m: 2 }}>
+          Submit
+        </Button>
       </form>
     </Layout>
   );
